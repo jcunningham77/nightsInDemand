@@ -6,6 +6,7 @@ import com.eventdemand.plugins.configureRouting
 import com.eventdemand.plugins.configureSerialization
 import com.eventdemand.services.AggregatorService
 import com.eventdemand.services.EspnService
+import com.eventdemand.services.TicketmasterService
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -28,7 +29,8 @@ fun Application.module() {
     }
 
     val espnService = EspnService(httpClient)
-    val aggregatorService = AggregatorService(espnService)
+    val ticketmasterService = TicketmasterService(httpClient)
+    val aggregatorService = AggregatorService(espnService, ticketmasterService)
 
     configureRouting(aggregatorService)
 }

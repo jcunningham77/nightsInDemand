@@ -6,12 +6,14 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 
 class AggregatorService(
-    private val espnService: EspnService
+    private val espnService: EspnService,
+    private val ticketmasterService: TicketmasterService
 ) {
 
     suspend fun fetchAll(city: String, from: String, to: String): List<Event> = coroutineScope {
         val espn = async { espnService.fetchEvents(city, from, to) }
-        espn.await().distinctBy { it.id }
+        val tickets = async { ticketmasterService.fetchEvents(city, from, to) }
+        (espn.await() + tickets.await()).distinctBy { it.id }
     }
 
     suspend fun buildReports(city: String, from: String, to: String): List<CityNightReport> {
