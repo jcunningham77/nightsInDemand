@@ -46,7 +46,8 @@ class TicketmasterService(private val client: HttpClient) {
                 val root = json.parseToJsonElement(responseText).jsonObject
 
                 val events = root["_embedded"]?.jsonObject?.get("events")?.jsonArray ?: break
-                results.addAll(events.mapNotNull { parseEvent(it.jsonObject, city) })
+                results.addAll(events.mapNotNull { parseEvent(it.jsonObject, city) }
+                    .filter { it.date >= from && it.date <= to })
 
                 val totalPages = root["page"]?.jsonObject?.get("totalPages")?.jsonPrimitive?.int ?: 1
                 page++

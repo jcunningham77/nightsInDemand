@@ -22,7 +22,10 @@ fun main(args: Array<String>) {
 
 fun loadDotEnv() {
     val envFile = java.io.File(".env")
-    if (!envFile.exists()) return
+    if (!envFile.exists()) {
+        println("env file not found: ${envFile.absolutePath}")
+        return
+    }
     envFile.forEachLine { line ->
         val trimmed = line.trim()
         if (trimmed.isBlank() || trimmed.startsWith("#")) return@forEachLine
