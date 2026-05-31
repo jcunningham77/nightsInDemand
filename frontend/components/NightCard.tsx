@@ -1,6 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { CityNightReport } from "@/types"
+import { CityNightReport, Event } from "@/types"
 import { DemandBadge } from "./DemandBadge"
+
+/** Mirrors CONCERT_MIN_CAPACITY in AggregatorService.kt */
+const CONCERT_MIN_CAPACITY = 10_000
+
+function isSignificant(event: Event): boolean {
+  if (event.category !== "concert") return true
+  return (event.estimatedAttendance ?? 0) >= CONCERT_MIN_CAPACITY
+}
 
 function formatDate(iso: string) {
   return new Date(iso + "T12:00:00").toLocaleDateString("en-US", {
@@ -41,7 +49,14 @@ export function NightCard({ report }: { report: CityNightReport }) {
           <div key={event.id} className="flex items-start gap-3 text-sm">
             <span className="mt-0.5 text-base">{categoryIcon[event.category] ?? "📅"}</span>
             <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{event.name}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium truncate">{event.name}</p>
+                {!isSignificant(event) && (
+                  <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+                    smaller venue
+                  </span>
+                )}
+              </div>
               <p className="text-muted-foreground text-xs">
                 {event.venue}
                 {event.league ? ` · ${event.league}` : ""}

@@ -8,6 +8,8 @@ import kotlinx.coroutines.coroutineScope
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+const val CONCERT_MIN_CAPACITY = 10_000
+
 class AggregatorService(
     private val espnService: EspnService,
     private val ticketmasterService: TicketmasterService,
@@ -90,9 +92,9 @@ class AggregatorService(
         return score.coerceIn(1, 10)
     }
 
-    // Sports events always count. Concerts only count if venue holds 10k+.
+    // Sports events always count. Concerts only count if venue holds CONCERT_MIN_CAPACITY+.
     private fun Event.isSignificant(): Boolean = when (category) {
-        "concert" -> (estimatedAttendance ?: 0) >= 10_000
+        "concert" -> (estimatedAttendance ?: 0) >= CONCERT_MIN_CAPACITY
         else      -> true
     }
 
