@@ -1,0 +1,1 @@
+web: ./gradlew installDist && ./build/install/eventdemand-backend/bin/eventdemand-backend
