@@ -9,7 +9,9 @@ import com.eventdemand.services.AggregatorService
 import com.eventdemand.services.EspnService
 import com.eventdemand.services.TicketmasterService
 import io.ktor.client.*
+import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.http
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -44,7 +46,15 @@ fun Application.module() {
     configureSerialization()
     configureCORS()
 
+    val proxyHost = System.getProperty("CHARLES_PROXY_HOST") ?: System.getenv("CHARLES_PROXY_HOST")
+    val proxyPort = System.getProperty("CHARLES_PROXY_PORT") ?: System.getenv("CHARLES_PROXY_PORT")
+
     val httpClient = HttpClient(CIO) {
+        engine {
+            if (proxyHost != null && proxyPort != null) {
+                proxy = ProxyBuilder.http("http://$proxyHost:$proxyPort")
+                }
+            }
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }

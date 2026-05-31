@@ -55,12 +55,13 @@ class AggregatorService(
         return allEvents
             .groupBy { it.date }
             .map { (date, nightEvents) ->
-                val score = computeDemandScore(nightEvents)
+                val significantEvents = nightEvents.filter { it.isSignificant() }
+                val score = computeDemandScore(significantEvents)
                 CityNightReport(
                     date = date,
                     city = city,
-                    events = nightEvents,
-                    eventCount = nightEvents.size,
+                    events = nightEvents,               // full list shown in UI
+                    eventCount = significantEvents.size, // only significant events count toward threshold
                     demandScore = score,
                     demandLabel = demandLabel(score)
                 )
@@ -87,6 +88,12 @@ class AggregatorService(
             }.toInt()
         }
         return score.coerceIn(1, 10)
+    }
+
+    // Sports events always count. Concerts only count if venue holds 10k+.
+    private fun Event.isSignificant(): Boolean = when (category) {
+        "concert" -> (estimatedAttendance ?: 0) >= 10_000
+        else      -> true
     }
 
     private fun demandLabel(score: Int) = when {
