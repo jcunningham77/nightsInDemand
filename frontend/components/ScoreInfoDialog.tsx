@@ -31,7 +31,7 @@ export function ScoreInfoDialog() {
             <p className="text-muted-foreground/60 pt-1">capped at 10</p>
           </div>
           <p>
-            <span className="font-semibold text-foreground">Significant events</span> are sports games
+            <span className="font-semibold text-foreground">Significant events</span>{" "}are sports games
             (any size) and concerts at venues with 10,000+ capacity. Smaller venue
             shows are shown for context but don&apos;t affect the score.
           </p>
