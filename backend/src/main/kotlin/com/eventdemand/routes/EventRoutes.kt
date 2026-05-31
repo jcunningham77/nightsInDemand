@@ -2,6 +2,7 @@ package com.eventdemand.routes
 
 import com.eventdemand.services.AggregatorService
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -9,16 +10,14 @@ fun Routing.eventRoutes(aggregator: AggregatorService) {
     route("/api/events/{city}") {
         get {
             val city = call.parameters["city"] ?: return@get call.respond(HttpStatusCode.BadRequest, "City required")
-            val from = call.request.queryParameters["from"] ?: return@get call.respond(HttpStatusCode.BadRequest, "from date required")
-            val to = call.request.queryParameters["to"] ?: return@get call.respond(HttpStatusCode.BadRequest, "to date required")
+            val (from, to) = call.resolveDateRange() ?: return@get call.respond(HttpStatusCode.BadRequest, "Provide 'on' for a single date or 'from' and 'to' for a range")
             val reports = aggregator.buildReports(city, from, to)
             call.respond(reports)
         }
 
         get("/highdemand") {
             val city = call.parameters["city"] ?: return@get call.respond(HttpStatusCode.BadRequest, "City required")
-            val from = call.request.queryParameters["from"] ?: return@get call.respond(HttpStatusCode.BadRequest, "from date required")
-            val to = call.request.queryParameters["to"] ?: return@get call.respond(HttpStatusCode.BadRequest, "to date required")
+            val (from, to) = call.resolveDateRange() ?: return@get call.respond(HttpStatusCode.BadRequest, "Provide 'on' for a single date or 'from' and 'to' for a range")
             val threshold = call.request.queryParameters["threshold"]?.toIntOrNull() ?: 2
             val reports = aggregator.buildReports(city, from, to).filter { it.eventCount >= threshold }
             call.respond(reports)
@@ -29,4 +28,12 @@ fun Routing.eventRoutes(aggregator: AggregatorService) {
         val city = call.parameters["city"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "City required")
         call.respond(mapOf("message" to "Cache cleared for $city"))
     }
+}
+
+private fun ApplicationCall.resolveDateRange(): Pair<String, String>? {
+    val on = request.queryParameters["on"]
+    if (on != null) return on to on
+    val from = request.queryParameters["from"] ?: return null
+    val to = request.queryParameters["to"] ?: return null
+    return from to to
 }
