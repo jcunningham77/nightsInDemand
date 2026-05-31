@@ -26,6 +26,7 @@ fun Routing.eventRoutes(aggregator: AggregatorService) {
 
     delete("/api/cache/{city}") {
         val city = call.parameters["city"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "City required")
+        aggregator.invalidateCity(city)
         call.respond(mapOf("message" to "Cache cleared for $city"))
     }
 }

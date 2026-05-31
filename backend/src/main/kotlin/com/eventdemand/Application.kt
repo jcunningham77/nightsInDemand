@@ -4,6 +4,7 @@ import com.eventdemand.database.DatabaseFactory
 import com.eventdemand.plugins.configureCORS
 import com.eventdemand.plugins.configureRouting
 import com.eventdemand.plugins.configureSerialization
+import com.eventdemand.cache.CacheManager
 import com.eventdemand.services.AggregatorService
 import com.eventdemand.services.EspnService
 import com.eventdemand.services.TicketmasterService
@@ -51,7 +52,8 @@ fun Application.module() {
 
     val espnService = EspnService(httpClient)
     val ticketmasterService = TicketmasterService(httpClient)
-    val aggregatorService = AggregatorService(espnService, ticketmasterService)
+    val cacheManager = CacheManager()
+    val aggregatorService = AggregatorService(espnService, ticketmasterService, cacheManager)
 
     configureRouting(aggregatorService)
 }
