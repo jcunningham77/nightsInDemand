@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { CityNightReport } from "@/types"
+import { ScoreInfoDialog } from "./ScoreInfoDialog"
 
 const styles: Record<CityNightReport["demandLabel"], string> = {
   LOW:     "bg-slate-100 text-slate-700 hover:bg-slate-100",
@@ -17,8 +18,11 @@ const icons: Record<CityNightReport["demandLabel"], string> = {
 
 export function DemandBadge({ label, score }: { label: CityNightReport["demandLabel"]; score: number }) {
   return (
-    <Badge className={`text-sm font-semibold px-3 py-1 ${styles[label]}`}>
-      {icons[label]} {label} {score}/10
-    </Badge>
+    <div className="flex items-center gap-1.5">
+      <Badge className={`text-sm font-semibold px-3 py-1 ${styles[label]}`}>
+        {icons[label]} {label} {score}/10
+      </Badge>
+      <ScoreInfoDialog />
+    </div>
   )
 }

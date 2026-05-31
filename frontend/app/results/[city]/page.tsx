@@ -4,7 +4,6 @@ import { getNights, getHighDemandNights } from "@/lib/api"
 import { CityNightReport } from "@/types"
 import { NightCard } from "@/components/NightCard"
 import { DemandChart } from "@/components/DemandChart"
-import { ScoreInfoDialog } from "@/components/ScoreInfoDialog"
 import { Button } from "@/components/ui/button"
 
 interface Props {
@@ -76,12 +75,9 @@ export default async function ResultsPage({ params, searchParams }: Props) {
         {reports.length > 0 && (
           <>
             <div className="rounded-lg border bg-card p-4">
-              <div className="flex items-center gap-1.5 mb-3">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
-                  Demand Score by Night
-                </p>
-                <ScoreInfoDialog />
-              </div>
+              <p className="text-xs text-muted-foreground mb-3 font-medium uppercase tracking-wide">
+                Demand Score by Night
+              </p>
               <Suspense fallback={<div className="h-[180px] animate-pulse bg-muted rounded" />}>
                 <DemandChart reports={[...reports].sort((a, b) => a.date.localeCompare(b.date))} />
               </Suspense>
