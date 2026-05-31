@@ -8,7 +8,9 @@ import kotlinx.serialization.json.*
 
 class TicketmasterService(private val client: HttpClient) {
 
-    private val apiKey = System.getenv("TICKETMASTER_API_KEY") ?: ""
+    private val apiKey get() = System.getenv("TICKETMASTER_API_KEY")
+        ?: System.getProperty("TICKETMASTER_API_KEY")
+        ?: ""
 
     // Capacity estimates for well-known venues (Ticketmaster doesn't expose capacity)
     private val venueCapacities = mapOf(
