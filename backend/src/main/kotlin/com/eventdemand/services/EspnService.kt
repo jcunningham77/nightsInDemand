@@ -15,7 +15,11 @@ class EspnService(private val client: HttpClient) {
 
     // Map of league slug -> (sport path, league path, league label)
     private val leagues = mapOf(
-        "mlb" to Triple("baseball", "mlb", "MLB")
+        "mlb"  to Triple("baseball",    "mlb",    "MLB"),
+        "nba"  to Triple("basketball",  "nba",    "NBA"),
+        "nfl"  to Triple("football",    "nfl",    "NFL"),
+        "nhl"  to Triple("hockey",      "nhl",    "NHL"),
+        "mls"  to Triple("soccer",      "usa.1",  "MLS")
     )
 
     suspend fun fetchEvents(city: String, from: String, to: String): List<Event> {
@@ -58,7 +62,9 @@ class EspnService(private val client: HttpClient) {
                 val event = eventEl.jsonObject
                 val competition = event["competitions"]?.jsonArray?.firstOrNull()?.jsonObject ?: return@mapNotNull null
                 val venueObj = competition["venue"]?.jsonObject
-                val venueCity = venueObj?.get("address")?.jsonObject?.get("city")?.jsonPrimitive?.content ?: ""
+                // MLS returns "Seattle, Washington" — take only the city part before the comma
+                val rawCity = venueObj?.get("address")?.jsonObject?.get("city")?.jsonPrimitive?.content ?: ""
+                val venueCity = rawCity.substringBefore(",").trim()
 
                 // Filter to requested city, with NYC borough aliases
                 val cityAliases = nycAliases(city)
