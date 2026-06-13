@@ -24,3 +24,14 @@ data class CityNightReport(
     val demandScore: Int,
     val demandLabel: String
 )
+
+@Serializable
+data class CityDemandSummary(
+    val city: String,
+    val lat: Double,
+    val lng: Double,
+    val date: String,
+    val eventCount: Int,
+    val demandScore: Int,
+    val demandLabel: String
+)

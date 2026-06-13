@@ -7,6 +7,13 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Routing.eventRoutes(aggregator: AggregatorService) {
+    get("/api/heatmap") {
+        val date = call.request.queryParameters["date"]
+            ?: return@get call.respond(HttpStatusCode.BadRequest, "Provide 'date' (YYYY-MM-DD)")
+        val summaries = aggregator.buildHeatmap(date)
+        call.respond(summaries)
+    }
+
     route("/api/events/{city}") {
         get {
             val city = call.parameters["city"] ?: return@get call.respond(HttpStatusCode.BadRequest, "City required")

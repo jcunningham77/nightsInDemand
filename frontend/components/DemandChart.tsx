@@ -2,13 +2,7 @@
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts"
 import { CityNightReport } from "@/types"
-
-const barColor: Record<CityNightReport["demandLabel"], string> = {
-  LOW:     "#94a3b8",
-  MEDIUM:  "#fbbf24",
-  HIGH:    "#f97316",
-  EXTREME: "#ef4444",
-}
+import { demandColor } from "@/lib/demand"
 
 function shortDate(iso: string) {
   const d = new Date(iso + "T12:00:00")
@@ -35,7 +29,7 @@ export function DemandChart({ reports }: { reports: CityNightReport[] }) {
         />
         <Bar dataKey="score" radius={[4, 4, 0, 0]}>
           {data.map((entry, i) => (
-            <Cell key={i} fill={barColor[entry.label]} />
+            <Cell key={i} fill={demandColor[entry.label]} />
           ))}
         </Bar>
       </BarChart>
