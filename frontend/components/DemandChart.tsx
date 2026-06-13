@@ -9,9 +9,17 @@ function shortDate(iso: string) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
 }
 
+function shortDateWithWeekday(iso: string) {
+  const d = new Date(iso + "T12:00:00")
+  const weekday = d.toLocaleDateString("en-US", { weekday: "short" })
+  const date = d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+  return `${date} (${weekday})`
+}
+
 export function DemandChart({ reports }: { reports: CityNightReport[] }) {
   const data = reports.map((r) => ({
     date: shortDate(r.date),
+    fullDate: shortDateWithWeekday(r.date),
     score: r.demandScore,
     label: r.demandLabel,
     events: r.eventCount,
@@ -26,6 +34,7 @@ export function DemandChart({ reports }: { reports: CityNightReport[] }) {
           formatter={(value, _, props) =>
             [`Score: ${value}/10 · ${props.payload.events} events`, props.payload.label]
           }
+          labelFormatter={(_, payload) => payload?.[0]?.payload?.fullDate ?? ""}
         />
         <Bar dataKey="score" radius={[4, 4, 0, 0]}>
           {data.map((entry, i) => (
