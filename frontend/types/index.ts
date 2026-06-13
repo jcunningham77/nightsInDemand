@@ -18,3 +18,13 @@ export interface CityNightReport {
   demandScore: number
   demandLabel: "LOW" | "MEDIUM" | "HIGH" | "EXTREME"
 }
+
+export interface CityDemandSummary {
+  city: string
+  lat: number
+  lng: number
+  date: string
+  eventCount: number
+  demandScore: number
+  demandLabel: "LOW" | "MEDIUM" | "HIGH" | "EXTREME"
+}

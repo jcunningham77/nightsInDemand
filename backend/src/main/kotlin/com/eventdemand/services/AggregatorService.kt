@@ -1,9 +1,11 @@
 package com.eventdemand.services
 
 import com.eventdemand.cache.CacheManager
+import com.eventdemand.models.CityDemandSummary
 import com.eventdemand.models.CityNightReport
 import com.eventdemand.models.Event
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -69,6 +71,24 @@ class AggregatorService(
                 )
             }
             .sortedBy { it.date }
+    }
+
+    /** Demand summary for every registered city on a single date, for the map/heatmap view. */
+    suspend fun buildHeatmap(date: String): List<CityDemandSummary> = coroutineScope {
+        CityRegistry.cities.map { location ->
+            async {
+                val report = buildReports(location.name, date, date).firstOrNull()
+                CityDemandSummary(
+                    city = location.name,
+                    lat = location.lat,
+                    lng = location.lng,
+                    date = date,
+                    eventCount = report?.eventCount ?: 0,
+                    demandScore = report?.demandScore ?: 1,
+                    demandLabel = report?.demandLabel ?: demandLabel(1)
+                )
+            }
+        }.awaitAll()
     }
 
     private suspend fun fetchFromApis(city: String, from: String, to: String): List<Event> = coroutineScope {
