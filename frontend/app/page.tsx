@@ -12,9 +12,9 @@ function today() {
   return new Date().toISOString().split("T")[0]
 }
 
-function ninetyDaysOut() {
+function thirtyDaysOut() {
   const d = new Date()
-  d.setDate(d.getDate() + 90)
+  d.setDate(d.getDate() + 30)
   return d.toISOString().split("T")[0]
 }
 
@@ -22,7 +22,7 @@ export default function Home() {
   const router = useRouter()
   const [city, setCity] = useState("New York")
   const [from, setFrom] = useState(today())
-  const [to, setTo] = useState(ninetyDaysOut())
+  const [to, setTo] = useState(thirtyDaysOut())
   const [highOnly, setHighOnly] = useState(true)
 
   function handleSubmit(e: React.FormEvent) {
