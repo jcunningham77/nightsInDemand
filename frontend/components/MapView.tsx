@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
 import { getCityDemandMap } from "@/lib/api"
-import { CityDemandSummary } from "@/types"
+import { CityDemandSummary, CityWeather } from "@/types"
 import { demandColor } from "@/lib/demand"
+import { fetchWeatherForCities } from "@/lib/weather"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -28,9 +29,18 @@ function shiftDate(date: string, days: number) {
   return d.toISOString().split("T")[0]
 }
 
+function isWithinDays(date: string, days: number) {
+  const todayStr = today()
+  const target = new Date(date + "T00:00:00")
+  const cutoff = new Date(todayStr + "T00:00:00")
+  cutoff.setDate(cutoff.getDate() + days)
+  return date >= todayStr && target <= cutoff
+}
+
 export function MapView() {
   const [date, setDate] = useState(today())
   const [data, setData] = useState<CityDemandSummary[]>([])
+  const [weather, setWeather] = useState<Map<string, CityWeather> | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -40,9 +50,20 @@ export function MapView() {
     async function load() {
       setLoading(true)
       setError(null)
+      setWeather(null)
       try {
         const result = await getCityDemandMap(date)
-        if (!cancelled) setData(result)
+        if (!cancelled) {
+          setData(result)
+          if (isWithinDays(date, 10) && result.length > 0) {
+            try {
+              const w = await fetchWeatherForCities(result, date)
+              if (!cancelled) setWeather(w)
+            } catch {
+              // weather is optional — fail silently
+            }
+          }
+        }
       } catch {
         if (!cancelled) setError("Failed to load demand map. Make sure the backend is running.")
       } finally {
@@ -90,7 +111,7 @@ export function MapView() {
 
       {!error && (
         <>
-          <DemandMap data={data} date={date} />
+          <DemandMap data={data} date={date} weather={weather} />
 
           <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
             <span className="font-medium uppercase tracking-wide">Demand:</span>

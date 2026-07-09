@@ -19,6 +19,12 @@ export interface CityNightReport {
   demandLabel: "LOW" | "MEDIUM" | "HIGH" | "EXTREME"
 }
 
+export interface CityWeather {
+  tempHighF: number
+  precipPct: number
+  weatherCode: number
+}
+
 export interface CityDemandSummary {
   city: string
   lat: number
