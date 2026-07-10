@@ -8,6 +8,25 @@ export interface Event {
   category: string
   estimatedAttendance: number | null
   source: string
+  minPrice: number | null
+  maxPrice: number | null
+  priceCurrency: string | null
+}
+
+export interface PriceQuote {
+  source: string
+  minPrice: number | null
+  maxPrice: number | null
+  currency: string
+  url: string | null
+  available: boolean
+}
+
+export interface PriceComparison {
+  eventId: string
+  quotes: PriceQuote[]
+  cheapestSource: string | null
+  fetchedAt: number
 }
 
 export interface CityNightReport {

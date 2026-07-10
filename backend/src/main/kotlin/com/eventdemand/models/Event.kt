@@ -12,7 +12,10 @@ data class Event(
     val league: String? = null,
     val category: String,
     val estimatedAttendance: Int? = null,
-    val source: String
+    val source: String,
+    val minPrice: Double? = null,
+    val maxPrice: Double? = null,
+    val priceCurrency: String? = null
 )
 
 @Serializable

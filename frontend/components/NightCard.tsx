@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CityNightReport, Event } from "@/types"
 import { DemandBadge } from "./DemandBadge"
+import { PriceComparisonDialog } from "./PriceComparisonDialog"
 
 /** Mirrors CONCERT_MIN_CAPACITY in AggregatorService.kt */
 const CONCERT_MIN_CAPACITY = 10_000
@@ -63,6 +64,9 @@ export function NightCard({ report }: { report: CityNightReport }) {
                 {event.estimatedAttendance ? ` · ${formatAttendance(event.estimatedAttendance)}` : ""}
                 <span className="ml-1 opacity-50">({sourceLabel[event.source] ?? event.source})</span>
               </p>
+              <div className="mt-1">
+                <PriceComparisonDialog event={event} />
+              </div>
             </div>
           </div>
         ))}

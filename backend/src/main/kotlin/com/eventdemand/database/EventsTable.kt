@@ -12,6 +12,9 @@ object EventsTable : Table("events") {
     val category = varchar("category", 50)
     val attendance = integer("estimated_attendance").nullable()
     val dataSource = varchar("source", 50)
+    val minPrice = double("min_price").nullable()
+    val maxPrice = double("max_price").nullable()
+    val priceCurrency = varchar("price_currency", 10).nullable()
     val cachedAt = long("cached_at")
     override val primaryKey = PrimaryKey(id)
 }

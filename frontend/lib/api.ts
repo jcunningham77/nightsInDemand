@@ -1,4 +1,4 @@
-import { CityDemandSummary, CityNightReport } from "@/types"
+import { CityDemandSummary, CityNightReport, PriceComparison } from "@/types"
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"
 
@@ -32,6 +32,15 @@ export async function getHighDemandNights(
 export async function getCityDemandMap(date: string): Promise<CityDemandSummary[]> {
   const res = await fetch(
     `${BASE_URL}/api/heatmap?date=${date}`,
+    { cache: "no-store" }
+  )
+  if (!res.ok) throw new Error(`API error: ${res.status}`)
+  return res.json()
+}
+
+export async function getPriceComparison(eventId: string): Promise<PriceComparison> {
+  const res = await fetch(
+    `${BASE_URL}/api/prices/${encodeURIComponent(eventId)}`,
     { cache: "no-store" }
   )
   if (!res.ok) throw new Error(`API error: ${res.status}`)
