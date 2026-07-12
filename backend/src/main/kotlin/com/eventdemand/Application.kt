@@ -11,6 +11,7 @@ import com.eventdemand.services.EspnService
 import com.eventdemand.services.SeatGeekProvider
 import com.eventdemand.services.SecondaryMarketService
 import com.eventdemand.services.StubHubProvider
+import com.eventdemand.services.TicketmasterProvider
 import com.eventdemand.services.TicketmasterService
 import com.eventdemand.services.VividSeatsProvider
 import io.ktor.client.*
@@ -71,12 +72,13 @@ fun Application.module() {
     val aggregatorService = AggregatorService(espnService, ticketmasterService, cacheManager)
 
     val priceCacheManager = PriceCacheManager()
+    val ticketmasterProvider = TicketmasterProvider(httpClient)
     val secondaryMarketProviders = listOf(
         SeatGeekProvider(httpClient),
         StubHubProvider(),
         VividSeatsProvider()
     )
-    val secondaryMarketService = SecondaryMarketService(secondaryMarketProviders, priceCacheManager)
+    val secondaryMarketService = SecondaryMarketService(ticketmasterProvider, secondaryMarketProviders, priceCacheManager)
 
     configureRouting(aggregatorService, cacheManager, secondaryMarketService)
 }

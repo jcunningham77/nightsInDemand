@@ -32,7 +32,10 @@ class SeatGeekProvider(private val client: HttpClient) : SecondaryMarketProvider
             val json = Json { ignoreUnknownKeys = true }
             val root = json.parseToJsonElement(responseText).jsonObject
             val match = root["events"]?.jsonArray?.firstOrNull()?.jsonObject
-                ?: return PriceQuote(source = sourceName, available = false)
+            if (match == null) {
+                System.err.println("SeatGeek: no match for '${event.name}' in ${event.city} on ${event.date}")
+                return PriceQuote(source = sourceName, available = false)
+            }
 
             val stats = match["stats"]?.jsonObject
             val minPrice = stats?.get("lowest_price")?.jsonPrimitive?.doubleOrNull

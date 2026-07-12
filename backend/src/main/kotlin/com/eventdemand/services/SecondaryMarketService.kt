@@ -9,6 +9,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 class SecondaryMarketService(
+    private val ticketmasterProvider: SecondaryMarketProvider,
     private val providers: List<SecondaryMarketProvider>,
     private val priceCacheManager: PriceCacheManager
 ) {
@@ -20,19 +21,28 @@ class SecondaryMarketService(
     }
 
     private suspend fun fetchFresh(event: Event): List<PriceQuote> = coroutineScope {
-        val ticketmasterQuote = PriceQuote(
-            source = "ticketmaster",
-            minPrice = event.minPrice,
-            maxPrice = event.maxPrice,
-            currency = event.priceCurrency ?: "USD",
-            available = event.minPrice != null || event.maxPrice != null
-        )
+        // Events fetched directly from Ticketmaster already carry price data — no need
+        // to re-query. Events from other sources (e.g. ESPN sports games) need a live
+        // Ticketmaster search to find a matching listing's price.
+        val ticketmasterQuoteAsync = async {
+            if (event.source == "ticketmaster") {
+                PriceQuote(
+                    source = "ticketmaster",
+                    minPrice = event.minPrice,
+                    maxPrice = event.maxPrice,
+                    currency = event.priceCurrency ?: "USD",
+                    available = event.minPrice != null || event.maxPrice != null
+                )
+            } else {
+                ticketmasterProvider.findPrice(event)
+            }
+        }
 
         val secondaryQuotes = providers.map { provider ->
             async { provider.findPrice(event) }
         }.awaitAll()
 
-        val quotes = listOf(ticketmasterQuote) + secondaryQuotes
+        val quotes = listOf(ticketmasterQuoteAsync.await()) + secondaryQuotes
         priceCacheManager.cache(event.id, quotes)
         quotes
     }
