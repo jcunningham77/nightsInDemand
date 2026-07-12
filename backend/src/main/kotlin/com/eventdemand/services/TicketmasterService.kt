@@ -100,6 +100,7 @@ class TicketmasterService(private val client: HttpClient) {
             val minPrice = priceRange?.get("min")?.jsonPrimitive?.doubleOrNull
             val maxPrice = priceRange?.get("max")?.jsonPrimitive?.doubleOrNull
             val priceCurrency = priceRange?.get("currency")?.jsonPrimitive?.content
+            val eventUrl = event["url"]?.jsonPrimitive?.content
 
             Event(
                 id = id,
@@ -113,7 +114,8 @@ class TicketmasterService(private val client: HttpClient) {
                 source = "ticketmaster",
                 minPrice = minPrice,
                 maxPrice = maxPrice,
-                priceCurrency = priceCurrency
+                priceCurrency = priceCurrency,
+                url = eventUrl
             )
         } catch (e: Exception) {
             System.err.println("Failed to parse Ticketmaster event: ${e.message}")

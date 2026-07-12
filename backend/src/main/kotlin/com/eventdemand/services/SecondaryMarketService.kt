@@ -31,6 +31,7 @@ class SecondaryMarketService(
                     minPrice = event.minPrice,
                     maxPrice = event.maxPrice,
                     currency = event.priceCurrency ?: "USD",
+                    url = event.url,
                     available = event.minPrice != null || event.maxPrice != null
                 )
             } else {

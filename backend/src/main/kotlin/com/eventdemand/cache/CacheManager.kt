@@ -46,6 +46,7 @@ class CacheManager {
                 it[minPrice] = event.minPrice
                 it[maxPrice] = event.maxPrice
                 it[priceCurrency] = event.priceCurrency
+                it[url] = event.url
                 it[cachedAt] = now
             }
         }
@@ -76,6 +77,7 @@ class CacheManager {
         source = this[EventsTable.dataSource],
         minPrice = this[EventsTable.minPrice],
         maxPrice = this[EventsTable.maxPrice],
-        priceCurrency = this[EventsTable.priceCurrency]
+        priceCurrency = this[EventsTable.priceCurrency],
+        url = this[EventsTable.url]
     )
 }

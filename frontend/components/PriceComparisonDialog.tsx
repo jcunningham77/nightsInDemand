@@ -57,6 +57,9 @@ export function PriceComparisonDialog({ event }: { event: Event }) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Price Comparison
+          </p>
           <DialogTitle>{event.name}</DialogTitle>
         </DialogHeader>
         <div className="space-y-2">

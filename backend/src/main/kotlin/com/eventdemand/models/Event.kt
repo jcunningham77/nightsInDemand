@@ -15,7 +15,8 @@ data class Event(
     val source: String,
     val minPrice: Double? = null,
     val maxPrice: Double? = null,
-    val priceCurrency: String? = null
+    val priceCurrency: String? = null,
+    val url: String? = null
 )
 
 @Serializable

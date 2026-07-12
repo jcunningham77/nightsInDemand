@@ -50,18 +50,16 @@ class TicketmasterProvider(private val client: HttpClient) : SecondaryMarketProv
             val currency = priceRange?.get("currency")?.jsonPrimitive?.content ?: "USD"
             val eventUrl = match["url"]?.jsonPrimitive?.content
 
-            if (minPrice == null && maxPrice == null) {
-                PriceQuote(source = sourceName, available = false)
-            } else {
-                PriceQuote(
-                    source = sourceName,
-                    minPrice = minPrice,
-                    maxPrice = maxPrice,
-                    currency = currency,
-                    url = eventUrl,
-                    available = true
-                )
-            }
+            // Ticketmaster's own catalog sometimes has no priceRanges for an onsale event —
+            // still surface the real listing URL as a fallback so the user can check manually.
+            PriceQuote(
+                source = sourceName,
+                minPrice = minPrice,
+                maxPrice = maxPrice,
+                currency = currency,
+                url = eventUrl,
+                available = minPrice != null || maxPrice != null
+            )
         } catch (e: Exception) {
             System.err.println("Ticketmaster live lookup failed: ${e.message}")
             PriceQuote(source = sourceName, available = false)
