@@ -26,6 +26,15 @@ class PriceCacheManager {
         rows.map { it.toPriceQuote() }
     }
 
+    /**
+     * Clears all cached price quotes. Called on startup — secondary-market prices already
+     * have a short TTL and are expected to go stale quickly, so a fresh process should not
+     * keep serving quotes computed by a previous build of the provider logic.
+     */
+    fun clearAll() = transaction {
+        PricesTable.deleteAll()
+    }
+
     /** Stores price quotes for an event, replacing any existing rows for that event. */
     fun cache(eventId: String, quotes: List<PriceQuote>) = transaction {
         PricesTable.deleteWhere { PricesTable.eventId eq eventId }

@@ -72,6 +72,7 @@ fun Application.module() {
     val aggregatorService = AggregatorService(espnService, ticketmasterService, cacheManager)
 
     val priceCacheManager = PriceCacheManager()
+    priceCacheManager.clearAll()
     val ticketmasterProvider = TicketmasterProvider(httpClient)
     val secondaryMarketProviders = listOf(
         SeatGeekProvider(httpClient),
