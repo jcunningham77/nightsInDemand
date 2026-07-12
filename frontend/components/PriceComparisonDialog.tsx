@@ -79,7 +79,7 @@ export function PriceComparisonDialog({ event }: { event: Event }) {
                   >
                     <span className="font-medium">
                       {sourceLabel[quote.source] ?? quote.source}
-                      {!quote.available && (
+                      {!quote.available && !quote.url && (
                         <span className="ml-1 text-xs text-muted-foreground">
                           (not yet connected)
                         </span>
@@ -88,6 +88,16 @@ export function PriceComparisonDialog({ event }: { event: Event }) {
                     <span className="flex items-center gap-2">
                       {formatPrice(quote)}
                       {isCheapest && <Badge variant="default">cheapest</Badge>}
+                      {!quote.available && quote.url && (
+                        <a
+                          href={quote.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-medium text-primary opacity-100 hover:underline"
+                        >
+                          View on {sourceLabel[quote.source] ?? quote.source} ↗
+                        </a>
+                      )}
                     </span>
                   </li>
                 )
