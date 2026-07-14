@@ -19,6 +19,15 @@ const sourceLabel: Record<string, string> = {
   vividseats: "Vivid Seats",
 }
 
+function formatShortDate(iso: string) {
+  return new Date(iso + "T12:00:00").toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })
+}
+
 function formatPrice(quote: PriceComparison["quotes"][number]) {
   if (!quote.available || quote.minPrice == null) return "Not available"
   const min = `$${quote.minPrice.toFixed(0)}`
@@ -58,7 +67,7 @@ export function PriceComparisonDialog({ event }: { event: Event }) {
       <DialogContent>
         <DialogHeader>
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Price Comparison
+            Price Comparison · {formatShortDate(event.date)}
           </p>
           <DialogTitle>{event.name}</DialogTitle>
         </DialogHeader>
