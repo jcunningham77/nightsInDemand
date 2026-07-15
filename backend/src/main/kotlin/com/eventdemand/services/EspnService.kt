@@ -66,8 +66,8 @@ class EspnService(private val client: HttpClient) {
                 val rawCity = venueObj?.get("address")?.jsonObject?.get("city")?.jsonPrimitive?.content ?: ""
                 val venueCity = rawCity.substringBefore(",").trim()
 
-                // Filter to requested city, with NYC borough aliases
-                val cityAliases = nycAliases(city)
+                // Filter to requested city, with metro-area aliases (e.g. NYC boroughs)
+                val cityAliases = CityAliases.forCity(city)
                 if (cityAliases.none { venueCity.contains(it, ignoreCase = true) }) return@mapNotNull null
 
                 val venueName = venueObj?.get("fullName")?.jsonPrimitive?.content ?: "Unknown Venue"
@@ -98,12 +98,6 @@ class EspnService(private val client: HttpClient) {
                 null
             }
         }
-    }
-
-    private fun nycAliases(city: String): List<String> {
-        val nyc = listOf("New York", "Bronx", "Brooklyn", "Queens", "Manhattan", "Flushing", "East Rutherford")
-        return if (nyc.any { it.equals(city, ignoreCase = true) || city.contains(it, ignoreCase = true) }) nyc
-        else listOf(city)
     }
 
     private fun datesBetween(from: String, to: String): List<String> {

@@ -43,6 +43,10 @@ class CacheManager {
                 it[category] = event.category
                 it[attendance] = event.estimatedAttendance
                 it[dataSource] = event.source
+                it[minPrice] = event.minPrice
+                it[maxPrice] = event.maxPrice
+                it[priceCurrency] = event.priceCurrency
+                it[url] = event.url
                 it[cachedAt] = now
             }
         }
@@ -51,6 +55,14 @@ class CacheManager {
     /** Deletes all cached events for a city. */
     fun invalidateCity(city: String) = transaction {
         EventsTable.deleteWhere { EventsTable.city eq city }
+    }
+
+    /** Looks up a single cached event by ID, regardless of TTL freshness. */
+    fun findEventById(eventId: String): Event? = transaction {
+        EventsTable.selectAll()
+            .where { EventsTable.id eq eventId }
+            .firstOrNull()
+            ?.toEvent()
     }
 
     private fun ResultRow.toEvent() = Event(
@@ -62,6 +74,10 @@ class CacheManager {
         league = this[EventsTable.league],
         category = this[EventsTable.category],
         estimatedAttendance = this[EventsTable.attendance],
-        source = this[EventsTable.dataSource]
+        source = this[EventsTable.dataSource],
+        minPrice = this[EventsTable.minPrice],
+        maxPrice = this[EventsTable.maxPrice],
+        priceCurrency = this[EventsTable.priceCurrency],
+        url = this[EventsTable.url]
     )
 }

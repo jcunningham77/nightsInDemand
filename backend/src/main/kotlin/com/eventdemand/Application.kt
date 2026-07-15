@@ -5,9 +5,15 @@ import com.eventdemand.plugins.configureCORS
 import com.eventdemand.plugins.configureRouting
 import com.eventdemand.plugins.configureSerialization
 import com.eventdemand.cache.CacheManager
+import com.eventdemand.cache.PriceCacheManager
 import com.eventdemand.services.AggregatorService
 import com.eventdemand.services.EspnService
+import com.eventdemand.services.SeatGeekProvider
+import com.eventdemand.services.SecondaryMarketService
+import com.eventdemand.services.StubHubProvider
+import com.eventdemand.services.TicketmasterProvider
 import com.eventdemand.services.TicketmasterService
+import com.eventdemand.services.VividSeatsProvider
 import io.ktor.client.*
 import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.cio.*
@@ -65,5 +71,15 @@ fun Application.module() {
     val cacheManager = CacheManager()
     val aggregatorService = AggregatorService(espnService, ticketmasterService, cacheManager)
 
-    configureRouting(aggregatorService)
+    val priceCacheManager = PriceCacheManager()
+    priceCacheManager.clearAll()
+    val ticketmasterProvider = TicketmasterProvider(httpClient)
+    val secondaryMarketProviders = listOf(
+        SeatGeekProvider(httpClient),
+        StubHubProvider(),
+        VividSeatsProvider()
+    )
+    val secondaryMarketService = SecondaryMarketService(ticketmasterProvider, secondaryMarketProviders, priceCacheManager)
+
+    configureRouting(aggregatorService, cacheManager, secondaryMarketService)
 }
