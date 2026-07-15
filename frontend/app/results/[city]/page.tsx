@@ -4,6 +4,7 @@ import { getNights, getHighDemandNights } from "@/lib/api"
 import { CityNightReport } from "@/types"
 import { NightCard } from "@/components/NightCard"
 import { DemandChart } from "@/components/DemandChart"
+import { DateRangeEditor } from "@/components/DateRangeEditor"
 import { Button } from "@/components/ui/button"
 
 interface Props {
@@ -39,7 +40,7 @@ export default async function ResultsPage({ params, searchParams }: Props) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">{decodedCity}</h1>
-            <p className="text-muted-foreground text-sm">{from} → {to}</p>
+            <DateRangeEditor city={city} from={from} to={to} highOnly={isHighOnly} />
           </div>
           <Link href="/">
             <Button variant="outline" size="sm">← New Search</Button>

@@ -34,6 +34,17 @@ class TicketmasterService(private val client: HttpClient) {
             return emptyList()
         }
 
+        // Ticketmaster's `city` filter is a single exact value, but some metros' venues are
+        // registered under a neighborhood/suburb name (e.g. Citi Field is tagged "Flushing").
+        // Query once per known alias so those venues aren't silently excluded.
+        val results = mutableListOf<Event>()
+        for (alias in CityAliases.forCity(city)) {
+            results.addAll(fetchForCityName(alias, from, to))
+        }
+        return results.distinctBy { it.id }
+    }
+
+    private suspend fun fetchForCityName(city: String, from: String, to: String): List<Event> {
         val results = mutableListOf<Event>()
         var page = 0
         val pageSize = 200
@@ -54,7 +65,7 @@ class TicketmasterService(private val client: HttpClient) {
                 if (page >= totalPages || page >= 5) break  // cap at 5 pages / 1000 events
             } while (true)
         } catch (e: Exception) {
-            System.err.println("Ticketmaster fetch failed: ${e.message}")
+            System.err.println("Ticketmaster fetch failed for '$city': ${e.message}")
         }
 
         return results
